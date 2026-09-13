@@ -9,10 +9,8 @@
 const APP_CONFIG = Object.freeze({
 
   // ── Webhook endpoint ───────────────────────────────────────
-  // Update this to your n8n webhook URL after activating the workflow.
-  // This URL is safe to include in frontend code — it is a public endpoint.
-  // Server-side validation (webhook secret) prevents abuse.
-  WEBHOOK_URL: "https://raffy1.app.n8n.cloud/webhook-test/lead-form",
+  // Active production n8n webhook URL (runs 24/7 automatically)
+  WEBHOOK_URL: "https://raffy1.app.n8n.cloud/webhook/lead-form",
 
   // ── Form settings ─────────────────────────────────────────
   SERVICES: [
