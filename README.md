@@ -1,35 +1,35 @@
-# ⚡ Automated Lead Management System
+# Automated Lead Management System
 
 > **DigiHust AI & Automation** — Internship Assignment  
 > A production-quality system that captures leads from a web form and automatically processes them through validation, storage, email, notifications, and CRM integration using n8n automation.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Project Purpose](#-project-purpose)
-- [Architecture](#-architecture)
-- [Features](#-features)
-- [Prerequisites](#-prerequisites)
-- [Project Structure](#-project-structure)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Environment Variables](#-environment-variables)
-- [n8n Setup](#-n8n-setup)
-- [Google Sheets Setup](#-google-sheets-setup)
-- [Gmail Setup](#-gmail-setup)
-- [Discord Setup](#-discord-setup)
-- [CRM Setup (HubSpot)](#-crm-setup-hubspot)
-- [Running the System](#-running-the-system)
-- [Testing](#-testing)
-- [API Documentation](#-api-documentation)
-- [Troubleshooting](#-troubleshooting)
-- [Limitations](#-limitations)
-- [Future Improvements](#-future-improvements)
+- [Project Purpose](#project-purpose)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Environment Variables](#environment-variables)
+- [n8n Setup](#n8n-setup)
+- [Google Sheets Setup](#google-sheets-setup)
+- [Gmail Setup](#gmail-setup)
+- [Discord Setup](#discord-setup)
+- [CRM Setup (HubSpot)](#crm-setup-hubspot)
+- [Running the System](#running-the-system)
+- [Testing](#testing)
+- [API Documentation](#api-documentation)
+- [Troubleshooting](#troubleshooting)
+- [Limitations](#limitations)
+- [Future Improvements](#future-improvements)
 
 ---
 
-## 🎯 Project Purpose
+## Project Purpose
 
 This system automates the complete lead management lifecycle:
 
@@ -45,7 +45,7 @@ All integrations run through an **n8n automation workflow** with robust error ha
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```
                     ┌─────────────┐
@@ -102,11 +102,11 @@ For detailed architecture documentation, see [docs/architecture/architecture.md]
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Implementation |
 |---------|---------------|
-| Lead capture form | HTML5 + CSS3 + Vanilla JS, responsive dark-mode design |
+| Lead capture form | HTML5 + CSS3 + Vanilla JS, clean light theme design |
 | Client-side validation | Real-time field validation with visual feedback |
 | Server-side validation | n8n Code node validates + sanitizes all fields |
 | Unique lead ID | `LEAD-YYYYMMDD-XXXX` format with ISO timestamp |
@@ -121,24 +121,25 @@ For detailed architecture documentation, see [docs/architecture/architecture.md]
 
 ---
 
-## 📦 Prerequisites
+## Prerequisites
 
 | Tool | Version | Required |
 |------|---------|----------|
-| Modern web browser | Chrome/Firefox/Edge | ✅ |
-| n8n | v1.0+ (Cloud or Docker) | ✅ |
-| Google Account | Free | ✅ |
-| Discord Account + Server | Free | ✅ |
-| HubSpot Account | Free CRM tier | ✅ |
-| Node.js | 18+ (optional, for local dev server) | ⬜ |
-| Docker | 20+ (optional, for self-hosted n8n) | ⬜ |
+| Modern web browser | Chrome/Firefox/Edge | Yes |
+| n8n | v1.0+ (Cloud or Docker) | Yes |
+| Google Account | Free | Yes |
+| Discord Account + Server | Free | Yes |
+| HubSpot Account | Free CRM tier | Yes |
+| Node.js | 18+ (optional, for local dev server) | Optional |
+| Docker | 20+ (optional, for self-hosted n8n) | Optional |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Lead-management-system/
+├── index.html                  # Root landing page (GitHub Pages ready)
 ├── frontend/
 │   ├── index.html              # Lead capture form
 │   ├── css/
@@ -165,18 +166,18 @@ Lead-management-system/
 │   └── demo-script.md
 ├── .env.example                # Environment variable template
 ├── .gitignore                  # Git ignore rules
-└── README.md                   # This file
+└── README.md                   # Project README
 ```
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### 1. Clone or Download
 
 ```bash
-git clone https://github.com/your-username/Lead-management-system.git
-cd Lead-management-system
+git clone https://github.com/Raffy0-1/Automated-Lead-Management-System.git
+cd Automated-Lead-Management-System
 ```
 
 ### 2. Copy Environment Template
@@ -188,13 +189,13 @@ cp .env.example .env
 ### 3. Import n8n Workflow
 
 1. Open your n8n instance
-2. Go to **Workflows** → **Import from File**
+2. Go to **Workflows** -> **Import from File**
 3. Select `automation/workflows/lead-management-workflow.json`
 4. Configure credentials (see sections below)
 
 ### 4. Set Up Google Sheets
 
-Follow [Google Sheets Setup](#-google-sheets-setup) below.
+Follow [Google Sheets Setup](#google-sheets-setup) below.
 
 ### 5. Configure All Services
 
@@ -202,7 +203,7 @@ Follow the [Setup Guide](docs/setup-guide.md) for detailed instructions.
 
 ---
 
-## ⚙ Configuration
+## Configuration
 
 All configuration is done through:
 
@@ -212,15 +213,15 @@ All configuration is done through:
 
 ### Security Principles
 
-- ❌ No secrets in frontend JavaScript
-- ❌ No hardcoded API keys, tokens, or passwords
-- ✅ All credentials in n8n's encrypted credential store
-- ✅ Server-side validation is authoritative
-- ✅ Input sanitization at both client and server level
+- No secrets in frontend JavaScript
+- No hardcoded API keys, tokens, or passwords
+- All credentials in n8n's encrypted credential store
+- Server-side validation is authoritative
+- Input sanitization at both client and server level
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 See [`.env.example`](.env.example) for the complete list. Key variables:
 
@@ -235,9 +236,9 @@ See [`.env.example`](.env.example) for the complete list. Key variables:
 
 ---
 
-## 🔧 n8n Setup
+## n8n Setup
 
-See [docs/setup-guide.md → Section 2](docs/setup-guide.md#2-n8n-setup) for full instructions.
+See [docs/setup-guide.md -> Section 2](docs/setup-guide.md#2-n8n-setup) for full instructions.
 
 **Quick start with n8n Cloud:**
 1. Create a free account at [n8n.cloud](https://app.n8n.cloud/register)
@@ -247,9 +248,9 @@ See [docs/setup-guide.md → Section 2](docs/setup-guide.md#2-n8n-setup) for ful
 
 ---
 
-## 📊 Google Sheets Setup
+## Google Sheets Setup
 
-See [docs/setup-guide.md → Section 4](docs/setup-guide.md#4-google-sheets-setup).
+See [docs/setup-guide.md -> Section 4](docs/setup-guide.md#4-google-sheets-setup).
 
 1. Create a new spreadsheet
 2. Name the tab `Leads`
@@ -258,9 +259,9 @@ See [docs/setup-guide.md → Section 4](docs/setup-guide.md#4-google-sheets-setu
 
 ---
 
-## 📧 Gmail Setup
+## Gmail Setup
 
-See [docs/setup-guide.md → Section 5](docs/setup-guide.md#5-gmail-setup-in-n8n).
+See [docs/setup-guide.md -> Section 5](docs/setup-guide.md#5-gmail-setup-in-n8n).
 
 1. Enable Gmail API in Google Cloud Console
 2. Create OAuth2 credential in n8n
@@ -268,18 +269,18 @@ See [docs/setup-guide.md → Section 5](docs/setup-guide.md#5-gmail-setup-in-n8n
 
 ---
 
-## 🔔 Discord Setup
+## Discord Setup
 
-See [docs/setup-guide.md → Section 6](docs/setup-guide.md#6-discord-webhook-setup).
+See [docs/setup-guide.md -> Section 6](docs/setup-guide.md#6-discord-webhook-setup).
 
 1. Create a webhook in your Discord server
 2. Add the URL as an n8n environment variable
 
 ---
 
-## 🏢 CRM Setup (HubSpot)
+## CRM Setup (HubSpot)
 
-See [docs/setup-guide.md → Section 7](docs/setup-guide.md#7-hubspot-crm-setup).
+See [docs/setup-guide.md -> Section 7](docs/setup-guide.md#7-hubspot-crm-setup).
 
 1. Create a free HubSpot account
 2. Create a Private App with contacts.read/write scopes
@@ -289,19 +290,19 @@ The CRM integration is **modular** — the workflow uses a generic HTTP Request 
 
 ---
 
-## ▶ Running the System
+## Running the System
 
 ### Start the Frontend
 
 ```bash
 # Option 1: Python
-cd frontend && python -m http.server 3000
+python -m http.server 8080
 
 # Option 2: Node.js
-npx serve frontend -l 3000
+npx serve . -l 8080
 
-# Option 3: Open directly (may have CORS limitations)
-# Double-click frontend/index.html
+# Option 3: GitHub Pages
+# Visit https://raffy0-1.github.io/Automated-Lead-Management-System/
 ```
 
 ### Activate the n8n Workflow
@@ -319,7 +320,7 @@ WEBHOOK_URL: "https://your-instance.app.n8n.cloud/webhook/lead-form",
 
 ---
 
-## 🧪 Testing
+## Testing
 
 See [docs/test-cases.md](docs/test-cases.md) for 20 detailed test cases.
 
@@ -331,17 +332,9 @@ curl -X POST https://YOUR-INSTANCE/webhook/lead-form \
   -d '{"name":"Test User","email":"test@example.com","phone":"+1 555-000-0000","company":"Test Corp","service":"AI Consulting","budget":"$1,000 – $5,000","message":"Test submission."}'
 ```
 
-### Test Checklist
-
-- [ ] Valid lead → 200 + lead stored + email + Discord + CRM
-- [ ] Missing name → 400 + validation error
-- [ ] Invalid email → 400 + validation error
-- [ ] Duplicate email → 200 + status=duplicate
-- [ ] Service failure → 200 + partial status in response
-
 ---
 
-## 📖 API Documentation
+## API Documentation
 
 See [docs/api-documentation.md](docs/api-documentation.md) for the complete webhook API specification.
 
@@ -351,19 +344,19 @@ See [docs/api-documentation.md](docs/api-documentation.md) for the complete webh
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
-See [docs/setup-guide.md → Section 10](docs/setup-guide.md#10-troubleshooting).
+See [docs/setup-guide.md -> Section 10](docs/setup-guide.md#10-troubleshooting).
 
 Common issues:
-- **"Failed to fetch"** — Webhook URL wrong or workflow not active
+- **Failed to fetch** — Webhook URL wrong or workflow not active
 - **CORS errors** — Use a local dev server instead of `file://`
 - **Google Sheets errors** — Verify sheet ID and tab name `Leads`
 - **Email not sending** — Re-authenticate Gmail credential in n8n
 
 ---
 
-## ⚠ Limitations
+## Limitations
 
 1. **Google Sheets** as a database is suitable for low-to-medium volume (< 1000 leads/day). For high volume, migrate to PostgreSQL using the included `schema.sql`.
 2. **No rate limiting** on the webhook — add a reverse proxy for production.
@@ -374,7 +367,7 @@ Common issues:
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 1. **Rate limiting** via reverse proxy (Nginx/Caddy)
 2. **CAPTCHA** integration (hCaptcha)
@@ -391,13 +384,13 @@ Common issues:
 
 ---
 
-## 📄 License
+## License
 
 This project was created as part of the DigiHust AI & Automation internship assignment.
 
 ---
 
-## 👤 Author
+## Author
 
 DigiHust AI & Automation Intern  
 September 2026
