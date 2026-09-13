@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Get a free consultation from DigiHust AI & Automation. Submit your project details and our team will respond within 24 hours.">
+  <title>Get Started — DigiHust AI & Automation</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="shortcut icon" href="assets/favicon.ico">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Background decorations -->
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ── Top Navbar ─────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="https://www.digihust.tech/" class="brand-logo" aria-label="DigiHust Homepage" target="_blank" rel="noopener noreferrer">
+        <img src="assets/logo.png" alt="DigiHust Logo" class="brand-logo-img">
+        <span class="brand-name">Digi<span>Hust</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#services" class="nav-link">Capabilities</a></li>
+        <li><a href="#metrics" class="nav-link">Metrics</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <a href="https://www.digihust.tech/" class="nav-cta" target="_blank" rel="noopener noreferrer">
+        Start a Project
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Main Container ────────────────────────────────────── -->
+  <main class="container" id="contact">
+
+    <!-- Hero Section -->
+    <section class="hero" aria-label="Introduction">
+      <div class="badge-wrapper">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          VERIFIED SOURCED TALENT • SINGLE MANAGED CONTRACT
+        </div>
+      </div>
+      <h1 class="hero-title">Your Digital Work. <br><span class="highlight-text">Handled by Skilled People.</span></h1>
+      <p class="hero-subtitle">One company. Coordinated specialized talent. DigiHust delivers end-to-end web engineering, brand identity, AI workflows, and cybersecurity under one managed roof.</p>
+    </section>
+
+    <!-- ── Metrics Stats Section ────────────────────────────── -->
+    <section class="stats-grid" id="metrics" aria-label="Company Statistics">
+      <div class="stat-card">
+        <div class="stat-number">99.4%</div>
+        <div class="stat-label">On-Time Delivery</div>
+        <div class="stat-subtext">Disciplined sprint management</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Verified Specialists</div>
+        <div class="stat-subtext">Trained &amp; domain vetted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1 Point</div>
+        <div class="stat-label">Of Contact</div>
+        <div class="stat-subtext">No freelancer juggling</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">24h</div>
+        <div class="stat-label">Quote Turnaround</div>
+        <div class="stat-subtext">Rapid assessment</div>
+      </div>
+    </section>
+
+    <!-- ── Lead Form Container ──────────────────────────────── -->
+    <div class="form-wrapper">
+      <form id="leadForm" class="lead-form" novalidate autocomplete="on">
+
+        <!-- Name -->
+        <div class="form-group" id="group-name">
+          <label for="name" class="form-label">
+            Full Name <span class="required" aria-label="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-input"
+            placeholder="John Doe"
+            autocomplete="name"
+            required
+            minlength="2"
+            maxlength="100"
+          >
+          <span class="form-error" id="error-name" role="alert"></span>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group" id="group-email">
+          <label for="email" class="form-label">
+            Email Address <span class="required" aria-label="required">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-input"
+            placeholder="john@company.com"
+            autocomplete="email"
+            required
+          >
+          <span class="form-error" id="error-email" role="alert"></span>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group" id="group-phone">
+          <label for="phone" class="form-label">
+            Phone Number <span class="required" aria-label="required">*</span>
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="form-input"
+            placeholder="03123456789"
+            autocomplete="tel"
+            required
+          >
+          <span class="form-error" id="error-phone" role="alert"></span>
+        </div>
+
+        <!-- Company -->
+        <div class="form-group" id="group-company">
+          <label for="company" class="form-label">
+            Company <span class="required" aria-label="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            class="form-input"
+            placeholder="DigiHust"
+            autocomplete="organization"
+            required
+            maxlength="200"
+          >
+          <span class="form-error" id="error-company" role="alert"></span>
+        </div>
+
+        <!-- Service Required -->
+        <div class="form-group form-group-full" id="group-service">
+          <label for="service" class="form-label">
+            Service Required <span class="required" aria-label="required">*</span>
+          </label>
+          <select id="service" name="service" class="form-input form-select" required>
+            <option value="" disabled selected>Select a service…</option>
+          </select>
+          <div class="pills-container" id="service-pills">
+            <!-- Dynamic pills inserted via JS -->
+          </div>
+          <span class="form-error" id="error-service" role="alert"></span>
+        </div>
+
+        <!-- Budget -->
+        <div class="form-group form-group-full" id="group-budget">
+          <label for="budget" class="form-label">
+            Budget Range <span class="required" aria-label="required">*</span>
+          </label>
+          <select id="budget" name="budget" class="form-input form-select" required>
+            <option value="" disabled selected>Select a budget range…</option>
+          </select>
+          <div class="pills-container" id="budget-pills">
+            <!-- Dynamic pills inserted via JS -->
+          </div>
+          <span class="form-error" id="error-budget" role="alert"></span>
+        </div>
+
+        <!-- Message -->
+        <div class="form-group form-group-full" id="group-message">
+          <label for="message" class="form-label">
+            Project Details <span class="required" aria-label="required">*</span>
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            class="form-input form-textarea"
+            placeholder="Describe your project, goals, and timeline…"
+            required
+            maxlength="2000"
+            rows="4"
+          ></textarea>
+          <div class="form-meta">
+            <span class="form-error" id="error-message" role="alert"></span>
+            <span class="char-count" id="message-count">0 / 2000</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group form-group-full">
+          <button type="submit" id="submitBtn" class="btn btn-primary">
+            <span class="btn-text">Submit Inquiry</span>
+            <svg class="btn-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            <span class="btn-loader" aria-hidden="true">
+              <span class="spinner"></span>
+              Processing Lead…
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- ── Success Panel ─────────────────────────────────── -->
+      <div id="successMessage" class="success-panel" hidden>
+        <div class="success-badge" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        </div>
+        <h2 class="success-title">Thank You!</h2>
+        <p class="success-text">
+          Your inquiry has been received. Our team is reviewing your project details
+          and will respond within 24 hours.
+        </p>
+        <div class="success-ref-card">
+          <div class="success-ref-label">Reference ID</div>
+          <div class="success-ref-id" id="leadIdDisplay">LEAD-20260912-XXXX</div>
+        </div>
+        <div>
+          <button type="button" id="newLeadBtn" class="btn btn-outline">Submit Another Inquiry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Error Notification Banner (Hidden by default) ─────── -->
+    <div id="errorBanner" class="error-banner" hidden role="alert">
+      <svg class="error-banner-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"/></svg>
+      <div class="error-banner-content">
+        <div class="error-banner-title">Submission Notice</div>
+        <div id="errorBannerText" class="error-banner-text">Something went wrong. Please try again.</div>
+      </div>
+      <button type="button" id="errorBannerClose" class="error-banner-close" aria-label="Dismiss">&times;</button>
+    </div>
+
+    <!-- ── Capabilities Section ────────────────────────────── -->
+    <section class="capabilities" id="services" aria-label="Core Capabilities">
+      <div class="section-tag">CORE CAPABILITIES</div>
+      <h2 class="section-title">One Company. Every Digital Need.</h2>
+      
+      <div class="cards-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.037-.501.087-.75.15m.75-.15a15.77 15.77 0 015.25 0m-5.25 0c.057.172.106.347.147.525m5.103-.525c.25.037.5.087.75.15m-.75-.15a15.77 15.77 0 00-5.25 0m5.25 0c-.057.172-.106.347-.147.525M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+          </div>
+          <h3 class="feature-title">AI &amp; Automation</h3>
+          <p class="feature-desc">Custom RAG chatbots, workflow automations, n8n integrations, and RPA process optimization.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+          </div>
+          <h3 class="feature-title">Web Engineering</h3>
+          <p class="feature-desc">High-performance web applications, modern frontends, scalable cloud backends, and CMS solutions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+          </div>
+          <h3 class="feature-title">CRM &amp; Analytics</h3>
+          <p class="feature-desc">HubSpot &amp; Salesforce CRM pipelines, custom business intelligence dashboards, and data tracking.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <a href="https://www.digihust.tech/" class="brand-logo" target="_blank" rel="noopener noreferrer">
+          <img src="assets/logo.png" alt="DigiHust Logo" class="brand-logo-img">
+          <span class="brand-name">Digi<span>Hust</span></span>
+        </a>
+        <div class="footer-slogan">HUSTLE. CREATE. DELIVER.</div>
+        <p class="footer-copy">&copy; 2026 DigiHust AI &amp; Automation. All rights reserved.</p>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

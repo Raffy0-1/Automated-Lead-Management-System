@@ -1,0 +1,850 @@
+{
+  "name": "Lead Management System",
+  "nodes": [
+    {
+      "parameters": {
+        "multipleMethods": "={{ false }}",
+        "httpMethod": "POST",
+        "path": "lead-form",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "b6174472-81a3-4955-a06a-4c706dd901af",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1936,
+        144
+      ],
+      "webhookId": "lead-form"
+    },
+    {
+      "parameters": {
+        "jsCode": "// \u2500\u2500 Validate & Sanitize Input \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst input = $input.first().json.body;\n\n// Helper: trim and collapse whitespace\nfunction clean(val) {\n  return (val || '').toString().trim().replace(/\\s+/g, ' ');\n}\n\n// Helper: basic HTML entity escaping\nfunction sanitize(val) {\n  return clean(val)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#x27;');\n}\n\n// Extract and sanitize fields\nconst name    = sanitize(input.name);\nconst email   = clean(input.email).toLowerCase();\nconst phone   = sanitize(input.phone);\nconst company = sanitize(input.company);\nconst service = sanitize(input.service);\nconst budget  = sanitize(input.budget);\nconst message = sanitize(input.message);\n\n// Validation errors\nconst errors = [];\n\nif (!name || name.length < 2) {\n  errors.push('Name is required (min 2 characters)');\n}\nif (name.length > 100) {\n  errors.push('Name must be under 100 characters');\n}\n\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nif (!email || !emailRegex.test(email)) {\n  errors.push('A valid email address is required');\n}\n\nconst phoneRegex = /^[+]?[\\d\\s\\-().]{7,20}$/;\nif (!phone || !phoneRegex.test(phone)) {\n  errors.push('A valid phone number is required');\n}\n\nif (!company) {\n  errors.push('Company is required');\n}\n\nif (!service) {\n  errors.push('Service is required');\n}\n\nif (!budget) {\n  errors.push('Budget is required');\n}\n\nif (!message) {\n  errors.push('Message is required');\n}\nif (message.length > 2000) {\n  errors.push('Message must be under 2000 characters');\n}\n\n// Output\nreturn {\n  json: {\n    valid: errors.length === 0,\n    errors: errors,\n    data: {\n      name,\n      email,\n      phone,\n      company,\n      service,\n      budget,\n      message\n    }\n  }\n};"
+      },
+      "id": "831b0693-486c-4db9-b37b-d6da066cd73b",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "valid-check",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "name": "filter.boolean.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cfdcb719-0d01-4ebd-82bd-ee5c3927f252",
+      "name": "Is Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1504,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": {{ JSON.stringify($json.errors) }}\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "3967d997-b2aa-4bc5-9465-a468b11c6a41",
+      "name": "Respond Validation Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// \u2500\u2500 Generate Lead ID & Timestamp \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst input = $input.first().json;\nconst now = new Date();\n\n// Format: LEAD-YYYYMMDD-XXXX (random 4-digit hex)\nconst datePart = now.toISOString().slice(0, 10).replace(/-/g, '');\nconst randomPart = Math.random().toString(16).substring(2, 6).toUpperCase();\nconst leadId = `LEAD-${datePart}-${randomPart}`;\n\nconst timestamp = now.toISOString();\n\nreturn {\n  json: {\n    lead_id: leadId,\n    timestamp: timestamp,\n    ...input.data,\n    status: 'new',\n    email_status: 'pending',\n    notification_status: 'pending',\n    crm_status: 'pending',\n    error_message: ''\n  }\n};"
+      },
+      "id": "ed4f9b35-a0b9-41a8-8109-9e75da31ac0c",
+      "name": "Generate Lead ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID || \"\" }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "=email",
+              "lookupValue": "=={{ $json.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2c615f0a-8b92-49cf-9f26-3c668429fea7",
+      "name": "Check Duplicate",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1056,
+        144
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// \u2500\u2500 Check Duplicate Results \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst items = $input.all();\nconst leadData = $('Generate Lead ID').first().json;\n\n// If Google Sheets returned rows, we have a duplicate\n// The search node returns matching rows; if none found, it returns\n// an empty result or a single item with no data\nlet isDuplicate = false;\nlet existingLeadId = '';\n\nif (items.length > 0) {\n  const firstResult = items[0].json;\n  // Check if the result actually has data (not an empty response)\n  if (firstResult && firstResult.email && firstResult.email === leadData.email) {\n    isDuplicate = true;\n    existingLeadId = firstResult.lead_id || 'unknown';\n  }\n}\n\nreturn {\n  json: {\n    ...leadData,\n    is_duplicate: isDuplicate,\n    existing_lead_id: existingLeadId,\n    status: isDuplicate ? 'duplicate' : 'new'\n  }\n};"
+      },
+      "id": "0927c0a1-7c3a-44f2-94bb-3b17678f462d",
+      "name": "Process Duplicate Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID || \"\" }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead_id": "={{ $json.lead_id }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "email": "={{ $json.email }}",
+            "phone": "={{ $json.phone }}",
+            "company": "={{ $json.company }}",
+            "service": "={{ $json.service }}",
+            "budget": "={{ $json.budget }}",
+            "message": "={{ $json.message }}",
+            "name": "={{ $json.name }}",
+            "status": "={{ $json.status }}",
+            "email_status": "={{ $json.email_status }}",
+            "notification_status": "={{ $json.notification_status }}",
+            "crm_status": "={{ $json.crm_status }}",
+            "error_message": "={{ $json.error_message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_status",
+              "displayName": "email_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notification_status",
+              "displayName": "notification_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "crm_status",
+              "displayName": "crm_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "73246010-07ed-415e-8188-d702583636e0",
+      "name": "Store Lead in Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -624,
+        144
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// \u2500\u2500 Prepare parallel downstream tasks \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n// Pass through the lead data for email, Discord, and CRM nodes\nconst lead = $('Process Duplicate Check').first().json;\n\nlet storeError = '';\ntry {\n  const storeResult = $('Store Lead in Sheets').first().json;\n  if (storeResult.error) {\n    storeError = 'Google Sheets: ' + (storeResult.error.message || JSON.stringify(storeResult.error));\n  }\n} catch (e) {\n  storeError = 'Google Sheets: ' + e.message;\n}\n\nreturn {\n  json: {\n    ...lead,\n    store_error: storeError\n  }\n};"
+      },
+      "id": "728fc8bd-1239-4e37-ba9c-192f7f83c561",
+      "name": "Prepare Downstream",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Thank you for your inquiry, {{ $json.name }}! \u2014 DigiHust",
+        "message": "=<div style=\"font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9fafb; padding: 0;\">\n  <div style=\"background: linear-gradient(135deg, #6366f1, #a855f7); padding: 32px 24px; text-align: center;\">\n    <h1 style=\"color: #fff; margin: 0; font-size: 24px;\">\u26a1 DigiHust</h1>\n    <p style=\"color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px;\">AI &amp; Automation Solutions</p>\n  </div>\n  <div style=\"padding: 32px 24px; background: #fff;\">\n    <h2 style=\"color: #111827; margin: 0 0 16px;\">Thank you, {{ $json.name }}!</h2>\n    <p style=\"color: #4b5563; line-height: 1.6; margin: 0 0 16px;\">We've received your inquiry and our team is reviewing your project details. You can expect to hear from us within <strong>24 hours</strong>.</p>\n    <div style=\"background: #f3f4f6; border-radius: 8px; padding: 20px; margin: 24px 0;\">\n      <h3 style=\"color: #374151; margin: 0 0 12px; font-size: 15px;\">\ud83d\udccb Your Submission Summary</h3>\n      <table style=\"width: 100%; border-collapse: collapse; font-size: 14px;\">\n        <tr><td style=\"padding: 6px 8px; color: #6b7280; width: 110px;\">Reference</td><td style=\"padding: 6px 8px; color: #111827; font-family: monospace;\">{{ $json.lead_id }}</td></tr>\n        <tr><td style=\"padding: 6px 8px; color: #6b7280;\">Service</td><td style=\"padding: 6px 8px; color: #111827;\">{{ $json.service }}</td></tr>\n        <tr><td style=\"padding: 6px 8px; color: #6b7280;\">Budget</td><td style=\"padding: 6px 8px; color: #111827;\">{{ $json.budget }}</td></tr>\n        <tr><td style=\"padding: 6px 8px; color: #6b7280;\">Company</td><td style=\"padding: 6px 8px; color: #111827;\">{{ $json.company }}</td></tr>\n      </table>\n    </div>\n    <p style=\"color: #4b5563; line-height: 1.6; margin: 0;\">If you have any urgent questions, reply directly to this email.</p>\n  </div>\n  <div style=\"padding: 20px 24px; text-align: center; background: #f9fafb; border-top: 1px solid #e5e7eb;\">\n    <p style=\"color: #9ca3af; font-size: 12px; margin: 0;\">&copy; 2026 DigiHust AI &amp; Automation. All rights reserved.</p>\n  </div>\n</div>",
+        "options": {
+          "replyTo": "="
+        }
+      },
+      "id": "823752af-91de-46e7-9272-62abf9da0b49",
+      "name": "Send Customer Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        0
+      ],
+      "webhookId": "25aff2af-1d63-46d2-9b24-161bc9c55b3a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GMAIL_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL || \"\" }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [\n    {\n      \"title\": \"\ud83d\udd14 New Lead Received\",\n      \"color\": 6366961,\n      \"fields\": [\n        { \"name\": \"Lead ID\", \"value\": \"{{ $json.lead_id }}\", \"inline\": true },\n        { \"name\": \"Status\", \"value\": \"{{ $json.status }}\", \"inline\": true },\n        { \"name\": \"Name\", \"value\": \"{{ $json.name }}\", \"inline\": true },\n        { \"name\": \"Email\", \"value\": \"{{ $json.email }}\", \"inline\": true },\n        { \"name\": \"Phone\", \"value\": \"{{ $json.phone }}\", \"inline\": true },\n        { \"name\": \"Company\", \"value\": \"{{ $json.company }}\", \"inline\": true },\n        { \"name\": \"Service\", \"value\": \"{{ $json.service }}\", \"inline\": false },\n        { \"name\": \"Budget\", \"value\": \"{{ $json.budget }}\", \"inline\": true },\n        { \"name\": \"Message\", \"value\": \"{{ $json.message.substring(0, 1000) }}\", \"inline\": false }\n      ],\n      \"timestamp\": \"{{ $json.timestamp }}\",\n      \"footer\": {\n        \"text\": \"DigiHust Lead Management System\"\n      }\n    }\n  ]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "5e7c127b-8c65-45e9-b3d7-5ea51e376a07",
+      "name": "Send Discord Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ ($env.HUBSPOT_BASE_URL || 'https://api.hubapi.com') + '/crm/v3/objects/contacts' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"properties\": {\n    \"firstname\": \"{{ $json.name.split(' ')[0] || $json.name }}\",\n    \"lastname\": \"{{ $json.name.split(' ').slice(1).join(' ') || '' }}\",\n    \"email\": \"{{ $json.email }}\",\n    \"phone\": \"{{ $json.phone }}\",\n    \"company\": \"{{ $json.company }}\",\n    \"hs_lead_status\": \"NEW\",\n    \"message\": \"Service: {{ $json.service }} | Budget: {{ $json.budget }} | {{ $json.message }}\"\n  }\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "70b1924f-56d9-4e3c-9131-d488eb583185",
+      "name": "CRM Create Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        368
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HUBSPOT_CREDENTIAL_ID",
+          "name": "HubSpot Bearer Token"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// \u2500\u2500 Aggregate Results & Update Status \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst lead = $('Prepare Downstream').first().json;\n\n// \u2500\u2500 Check email result \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet emailStatus = 'pending';\nlet emailError = '';\ntry {\n  const emailResult = $('Send Customer Email').first().json;\n  if (emailResult && (emailResult.id || emailResult.threadId)) {\n    emailStatus = 'sent';\n  } else if (emailResult && emailResult.error) {\n    emailStatus = 'failed';\n    emailError = emailResult.error.message || JSON.stringify(emailResult.error);\n  } else {\n    emailStatus = 'sent';\n  }\n} catch (e) {\n  emailStatus = 'failed';\n  emailError = e.message;\n}\n\n// \u2500\u2500 Check Discord result \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet notificationStatus = 'pending';\nlet discordError = '';\ntry {\n  const discordResult = $('Send Discord Notification').first().json;\n  // Discord returns empty body on success (204), or an error object\n  if (discordResult && discordResult.code) {\n    notificationStatus = 'failed';\n    discordError = discordResult.message || 'Discord error code: ' + discordResult.code;\n  } else {\n    notificationStatus = 'sent';\n  }\n} catch (e) {\n  notificationStatus = 'failed';\n  discordError = e.message;\n}\n\n// \u2500\u2500 Check CRM result \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nlet crmStatus = 'pending';\nlet crmError = '';\ntry {\n  const crmResult = $('CRM Create Contact').first().json;\n  if (crmResult && crmResult.id) {\n    crmStatus = 'synced';\n  } else if (crmResult && crmResult.status === 'error') {\n    crmStatus = 'failed';\n    crmError = crmResult.message || JSON.stringify(crmResult);\n  } else if (crmResult && crmResult.category === 'CONFLICT') {\n    crmStatus = 'duplicate_in_crm';\n    crmError = 'Contact already exists in HubSpot';\n  } else {\n    // Could be mock or unexpected response\n    crmStatus = 'failed';\n    crmError = 'Unexpected CRM response: ' + JSON.stringify(crmResult).substring(0, 200);\n  }\n} catch (e) {\n  crmStatus = 'failed';\n  crmError = e.message;\n}\n\n// \u2500\u2500 Build error message \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nconst allErrors = [\n  lead.store_error,\n  emailError ? 'Email: ' + emailError : '',\n  discordError ? 'Discord: ' + discordError : '',\n  crmError ? 'CRM: ' + crmError : ''\n].filter(e => e).join(' | ');\n\nreturn {\n  json: {\n    lead_id: lead.lead_id,\n    timestamp: lead.timestamp,\n    name: lead.name,\n    email: lead.email,\n    phone: lead.phone,\n    company: lead.company,\n    service: lead.service,\n    budget: lead.budget,\n    message: lead.message,\n    status: lead.status,\n    is_duplicate: lead.is_duplicate,\n    email_status: emailStatus,\n    notification_status: notificationStatus,\n    crm_status: crmStatus,\n    error_message: allErrors,\n    store_error: lead.store_error\n  }\n};"
+      },
+      "id": "8152a9a4-9c14-40ec-9dad-ffa2721a2ee1",
+      "name": "Aggregate Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GOOGLE_SHEETS_ID || \"\" }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead_id": "={{ $json.lead_id }}",
+            "email_status": "={{ $json.email_status }}",
+            "notification_status": "={{ $json.notification_status }}",
+            "crm_status": "={{ $json.crm_status }}",
+            "error_message": "={{ $json.error_message }}"
+          },
+          "matchingColumns": [
+            "lead_id"
+          ],
+          "schema": [
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email_status",
+              "displayName": "email_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notification_status",
+              "displayName": "notification_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "crm_status",
+              "displayName": "crm_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "82aef666-10d9-48ed-9cee-4dbdef81f5f8",
+      "name": "Update Lead Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        320,
+        192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "Google Sheets OAuth2"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"lead_id\": \"{{ $json.lead_id }}\",\n  \"status\": \"{{ $json.status }}\",\n  \"is_duplicate\": {{ $json.is_duplicate || false }},\n  \"message\": \"{{ $json.is_duplicate ? 'Lead received (duplicate detected \u2014 previously submitted)' : 'Thank you! Your inquiry has been received.' }}\",\n  \"services\": {\n    \"email\": \"{{ $json.email_status }}\",\n    \"notification\": \"{{ $json.notification_status }}\",\n    \"crm\": \"{{ $json.crm_status }}\"\n  }\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "bbf77bce-5217-4a00-8d74-2e9517cd0fd0",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        544,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Is Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Valid?": {
+      "main": [
+        [
+          {
+            "node": "Generate Lead ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Validation Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Lead ID": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Process Duplicate Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Duplicate Check": {
+      "main": [
+        [
+          {
+            "node": "Store Lead in Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Lead in Sheets": {
+      "main": [
+        [
+          {
+            "node": "Prepare Downstream",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Downstream": {
+      "main": [
+        [
+          {
+            "node": "Send Customer Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Discord Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CRM Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Customer Email": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Discord Notification": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM Create Contact": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Status": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b2742db8-7575-474c-bc69-ad6d66587904",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "602b4133fc58c499aa6fe8280fe5edd9b43eeb73d49df628e619d669a7a28385"
+  },
+  "nodeGroups": [],
+  "id": "vrD9gsrwXIurv2CD",
+  "tags": [
+    {
+      "name": "Lead Management",
+      "id": "DpiEgSDhjSp8ZRrc",
+      "updatedAt": "2026-09-12T06:02:47.410Z",
+      "createdAt": "2026-09-12T06:02:47.410Z"
+    }
+  ]
+}

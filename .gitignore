@@ -1,0 +1,15 @@
+# Environment & Credentials
+.env
+credentials/
+*.env.local
+
+# Build & Logs
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Archives & Large Video Files
+*.zip
+*.mp4
+demo/*.mp4
